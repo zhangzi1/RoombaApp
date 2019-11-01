@@ -1,6 +1,8 @@
 package com.example.roombaapp;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -77,6 +79,22 @@ public class Setting extends AppCompatActivity {
         // SharedPreferences
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Setting", 0);
         final SharedPreferences.Editor editor = pref.edit();
+
+        // read from SP
+        if (pref.getString("ip", null) == null || pref.getString("port", null) == null) {
+            // AlertDialog
+            AlertDialog.Builder dialog = new AlertDialog.Builder(Setting.this);
+            dialog.setTitle("Parameters not set!");
+            dialog.setMessage("Please set connection parameters first.");
+            dialog.setCancelable(true);
+            dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    // do nothing
+                }
+            });
+            dialog.show();
+        }
 
         // read from SP
         ip_blank.setText(pref.getString("ip", null));

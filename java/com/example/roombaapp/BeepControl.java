@@ -21,27 +21,18 @@ import android.view.MenuItem;
 import android.view.View;
 
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.Socket;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-
 
 public class BeepControl extends AppCompatActivity {
-    private SenderThread sender;
-    private SenderThread checker;
+    private TCP sender;
+    private TCP checker;
     private TextView status_text;
     private boolean stop = false;
     private String ip;
     private String port;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,24 +83,22 @@ public class BeepControl extends AppCompatActivity {
 
         // SharedPreferences
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Setting", 0);
-
-        // read from SP and connect
         ip = pref.getString("ip", null);
         port = pref.getString("port", null);
         Log.d("Setting", "IP: " + ip + "  Port: " + port);
         if (ip == null || port == null) {
-            //ip = "100.64.9.83";
-            //port = "8866";
+            ip = "100.64.9.83";
+            port = "8866";
             Intent intent = new Intent(BeepControl.this, Setting.class);
             startActivity(intent);
             finish();
         }
-        sender = new SenderThread(ip, Integer.parseInt(port));
-        sender.start();  // need a thread that constantly check the sender's status.
-        checker = new SenderThread(ip, Integer.parseInt(port));
-        checker.start();
+        sender = new TCP(ip, Integer.parseInt(port));
+        sender.setSocket();
+        checker = new TCP(ip, Integer.parseInt(port));
+        checker.setSocket();
 
-        //
+        // checking thread
         status_text = findViewById(R.id.status_text);
         Thread check = new Thread() {
             @Override
@@ -134,10 +123,10 @@ public class BeepControl extends AppCompatActivity {
                             sender.close();
                         if (checker.status)
                             checker.close();
-                        sender = new SenderThread(ip, Integer.parseInt(port));
-                        sender.start();
-                        checker = new SenderThread(ip, Integer.parseInt(port));
-                        checker.start();
+                        sender = new TCP(ip, Integer.parseInt(port));
+                        sender.setSocket();
+                        checker = new TCP(ip, Integer.parseInt(port));
+                        checker.setSocket();
                     }
                 }
             }
@@ -150,14 +139,7 @@ public class BeepControl extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checker.status) {
-                    //sender.send("BEEP");
-                    Thread send = new Thread() {
-                        @Override
-                        public void run() {
-                            sender.send("BEEP");
-                        }
-                    };
-                    send.start();
+                    sender.send("BEEP");
                     Toast.makeText(BeepControl.this, "Roomba beeping", Toast.LENGTH_SHORT).show();
                 } else {
                     // AlertDialog
@@ -175,22 +157,6 @@ public class BeepControl extends AppCompatActivity {
                 }
             }
         });
-        /*
-        Button reconnect = findViewById(R.id.reconnect);
-        reconnect.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sender.status)
-                    sender.close();
-                if (checker.status)
-                    checker.close();
-                sender = new SenderThread(ip, Integer.parseInt(port));
-                sender.start();
-                checker = new SenderThread(ip, Integer.parseInt(port));
-                checker.start();
-            }
-        });
-        */
     }
 
     @Override
@@ -211,69 +177,5 @@ public class BeepControl extends AppCompatActivity {
             }
         }
     };
-}
 
-class SenderThread extends Thread {
-    private String ip;
-    private int port;
-    private Socket socket;
-    private OutputStream outputStream;
-    public boolean status = false;
-
-    SenderThread(String ip, int port) {
-        this.ip = ip;
-        this.port = port;
-    }
-
-    @Override
-    public void run() {
-        try {
-            socket = new Socket(ip, port);
-            outputStream = socket.getOutputStream();
-            Log.d("SenderThread", "successful connection");
-            status = true;
-        } catch (UnknownHostException e) {
-            //e.printStackTrace();
-            Log.d("SenderThread", "error: unknown host");
-            status = false;
-        } catch (ConnectException e) {
-            Log.d("SenderThread", "error: connection failed");
-            status = false;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            Log.d("SenderThread", "error: null pointer 1");
-            status = false;
-        }
-    }
-
-    void send(String content) {
-        try {
-            outputStream.write(content.getBytes());
-            Log.d("SenderThread", "successful sending");
-            status = true;
-        } catch (SocketException e) {
-            Log.d("SenderThread", "error: socket broken");
-            status = false;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            Log.d("SenderThread", "error: null stream");
-            status = false;
-        }
-    }
-
-    void close() {
-        try {
-            socket.close();
-            outputStream.close();
-            Log.d("SenderThread", "connection closed");
-            status = false;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            Log.d("SenderThread", "error: null stream");
-            status = false;
-        }
-    }
 }
