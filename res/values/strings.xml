@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Roomba App</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="ip">100.64.9.83</string>
+    <string name="port">8866</string>
+</resources>
