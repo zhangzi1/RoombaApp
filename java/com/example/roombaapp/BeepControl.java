@@ -81,25 +81,31 @@ public class BeepControl extends AppCompatActivity {
 
         /* ************************************************************************************** */
 
+        // TextView
+        status_text = findViewById(R.id.status_text);
+
         // SharedPreferences
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Setting", 0);
         ip = pref.getString("ip", null);
         port = pref.getString("port", null);
         Log.d("Setting", "IP: " + ip + "  Port: " + port);
+
+        // launch Setting?
         if (ip == null || port == null) {
-            ip = "100.64.9.83";
+            ip = "";
             port = "8866";
             Intent intent = new Intent(BeepControl.this, Setting.class);
             startActivity(intent);
             finish();
         }
+
+        // start connection
         sender = new TCP(ip, Integer.parseInt(port));
         sender.setSocket();
         checker = new TCP(ip, Integer.parseInt(port));
         checker.setSocket();
 
-        // checking thread
-        status_text = findViewById(R.id.status_text);
+        // connectivity-checking thread
         Thread check = new Thread() {
             @Override
             public void run() {
@@ -133,7 +139,7 @@ public class BeepControl extends AppCompatActivity {
         };
         check.start();
 
-        // Button and onClick()
+        // Button "BEEP"
         Button beep = findViewById(R.id.beep);
         beep.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,6 +163,7 @@ public class BeepControl extends AppCompatActivity {
                 }
             }
         });
+
     }
 
     @Override

@@ -114,5 +114,6 @@ public class Setting extends AppCompatActivity {
                 Toast.makeText(Setting.this, "Parameters saved", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 }
