@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -95,6 +96,7 @@ public class Setting extends AppCompatActivity {
                 editor.putString("ip", ip);
                 editor.putString("port", port);
                 editor.commit();
+                Toast.makeText(Setting.this, "Parameters saved", Toast.LENGTH_SHORT).show();
             }
         });
     }
