@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class BeepControl extends AppCompatActivity {
+public class Manual extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
     private TextView status_text;
@@ -37,7 +37,7 @@ public class BeepControl extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.control_beep);
+        setContentView(R.layout.manual);
 
         //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -61,16 +61,16 @@ public class BeepControl extends AppCompatActivity {
                 Intent intent = null;
                 switch (item.getItemId()) {
                     case R.id.nav_1:
-                        intent = new Intent(BeepControl.this, BeepControl.class);
+                        intent = new Intent(Manual.this, BeepControl.class);
                         break;
                     case R.id.nav_2:
-                        intent = new Intent(BeepControl.this, Setting.class);
+                        intent = new Intent(Manual.this, Setting.class);
                         break;
                     case R.id.nav_3:
-                        intent = new Intent(BeepControl.this, Login.class);
+                        intent = new Intent(Manual.this, Login.class);
                         break;
                     case R.id.nav_4:
-                        intent = new Intent(BeepControl.this, Manual.class);
+                        intent = new Intent(Manual.this, Manual.class);
                         break;
                     default:
                 }
@@ -97,7 +97,7 @@ public class BeepControl extends AppCompatActivity {
         if (ip == null || port == null) {
             ip = "";
             port = "8866";
-            Intent intent = new Intent(BeepControl.this, Setting.class);
+            Intent intent = new Intent(Manual.this, Setting.class);
             startActivity(intent);
             finish();
         }
@@ -143,16 +143,89 @@ public class BeepControl extends AppCompatActivity {
         check.start();
 
         // Button "BEEP"
-        Button beep = findViewById(R.id.beep);
-        beep.setOnClickListener(new View.OnClickListener() {
+        Button forward = findViewById(R.id.forward);
+        Button back = findViewById(R.id.back);
+        Button left = findViewById(R.id.left);
+        Button right = findViewById(R.id.right);
+        //forward
+        forward.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (checker.status) {
-                    sender.send("BEEP");
-                    Toast.makeText(BeepControl.this, "Roomba beeping", Toast.LENGTH_SHORT).show();
+                    sender.send("forward");
+                    Toast.makeText(Manual.this, "Roomba forwarding", Toast.LENGTH_SHORT).show();
                 } else {
                     // AlertDialog
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(BeepControl.this);
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
+                    dialog.setTitle("Connection failed!");
+                    dialog.setMessage("Please check parameters or server status.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+                }
+            }
+        });
+        //back
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checker.status) {
+                    sender.send("back");
+                    Toast.makeText(Manual.this, "Roomba moving back", Toast.LENGTH_SHORT).show();
+                } else {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
+                    dialog.setTitle("Connection failed!");
+                    dialog.setMessage("Please check parameters or server status.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+                }
+            }
+        });
+        //left
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checker.status) {
+                    sender.send("left");
+                    Toast.makeText(Manual.this, "Roomba turing left", Toast.LENGTH_SHORT).show();
+                } else {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
+                    dialog.setTitle("Connection failed!");
+                    dialog.setMessage("Please check parameters or server status.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+                }
+            }
+        });
+        //right
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checker.status) {
+                    sender.send("right");
+                    Toast.makeText(Manual.this, "Roomba turning right", Toast.LENGTH_SHORT).show();
+                } else {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
                     dialog.setTitle("Connection failed!");
                     dialog.setMessage("Please check parameters or server status.");
                     dialog.setCancelable(true);

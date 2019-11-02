@@ -1,8 +1,6 @@
 package com.example.roombaapp;
 
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -13,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -60,6 +57,9 @@ public class Setting extends AppCompatActivity {
                     case R.id.nav_3:
                         intent = new Intent(Setting.this, Login.class);
                         break;
+                    case R.id.nav_4:
+                        intent = new Intent(Setting.this, Manual.class);
+                        break;
                     default:
                 }
                 startActivity(intent);
@@ -81,22 +81,6 @@ public class Setting extends AppCompatActivity {
         final SharedPreferences.Editor editor = pref.edit();
 
         // read from SP
-        if (pref.getString("ip", null) == null || pref.getString("port", null) == null) {
-            // AlertDialog
-            AlertDialog.Builder dialog = new AlertDialog.Builder(Setting.this);
-            dialog.setTitle("Parameters not set!");
-            dialog.setMessage("Please set connection parameters first.");
-            dialog.setCancelable(true);
-            dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // do nothing
-                }
-            });
-            dialog.show();
-        }
-
-        // read from SP
         ip_blank.setText(pref.getString("ip", null));
         port_blank.setText(pref.getString("port", null));
 
@@ -111,9 +95,7 @@ public class Setting extends AppCompatActivity {
                 editor.putString("ip", ip);
                 editor.putString("port", port);
                 editor.commit();
-                Toast.makeText(Setting.this, "Parameters saved", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 }

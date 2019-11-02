@@ -22,6 +22,9 @@
         <activity android:name=".Setting"
             android:label="Setting">
         </activity>
+        <activity android:name=".Manual"
+            android:label="Manual">
+        </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
