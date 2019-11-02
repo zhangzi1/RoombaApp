@@ -70,7 +70,7 @@ public class BeepControl extends AppCompatActivity {
                         intent = new Intent(BeepControl.this, Login.class);
                         break;
                     case R.id.nav_4:
-                        intent = new Intent(BeepControl.this, Manual.class);
+                        intent = new Intent(BeepControl.this, ManualControl.class);
                         break;
                     default:
                 }
@@ -177,7 +177,7 @@ public class BeepControl extends AppCompatActivity {
         stop = true;
     }
 
-    Handler handler = new Handler() {
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if ((boolean) msg.obj) {

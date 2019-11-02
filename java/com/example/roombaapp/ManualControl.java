@@ -18,15 +18,17 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 
-public class Manual extends AppCompatActivity {
+public class ManualControl extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
     private TextView status_text;
@@ -37,7 +39,7 @@ public class Manual extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.manual);
+        setContentView(R.layout.control_manual);
 
         //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -61,16 +63,16 @@ public class Manual extends AppCompatActivity {
                 Intent intent = null;
                 switch (item.getItemId()) {
                     case R.id.nav_1:
-                        intent = new Intent(Manual.this, BeepControl.class);
+                        intent = new Intent(ManualControl.this, BeepControl.class);
                         break;
                     case R.id.nav_2:
-                        intent = new Intent(Manual.this, Setting.class);
+                        intent = new Intent(ManualControl.this, Setting.class);
                         break;
                     case R.id.nav_3:
-                        intent = new Intent(Manual.this, Login.class);
+                        intent = new Intent(ManualControl.this, Login.class);
                         break;
                     case R.id.nav_4:
-                        intent = new Intent(Manual.this, Manual.class);
+                        intent = new Intent(ManualControl.this, ManualControl.class);
                         break;
                     default:
                 }
@@ -83,6 +85,9 @@ public class Manual extends AppCompatActivity {
         });
 
         /* ************************************************************************************** */
+
+        // VdeoView
+        VideoView videoView = (VideoView) findViewById(R.id.video_view);
 
         // TextView
         status_text = findViewById(R.id.status_text);
@@ -97,7 +102,7 @@ public class Manual extends AppCompatActivity {
         if (ip == null || port == null) {
             ip = "";
             port = "8866";
-            Intent intent = new Intent(Manual.this, Setting.class);
+            Intent intent = new Intent(ManualControl.this, Setting.class);
             startActivity(intent);
             finish();
         }
@@ -142,101 +147,85 @@ public class Manual extends AppCompatActivity {
         };
         check.start();
 
-        // Button "BEEP"
+        // Buttons
         Button forward = findViewById(R.id.forward);
-        Button back = findViewById(R.id.back);
+        Button backward = findViewById(R.id.back);
         Button left = findViewById(R.id.left);
         Button right = findViewById(R.id.right);
         //forward
-        forward.setOnClickListener(new View.OnClickListener() {
+        forward.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                if (checker.status) {
-                    sender.send("FORWARD");
-                    Toast.makeText(Manual.this, "Roomba moving forward", Toast.LENGTH_SHORT).show();
-                } else {
-                    // AlertDialog
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
-                    dialog.setTitle("Connection failed!");
-                    dialog.setMessage("Please check parameters or server status.");
-                    dialog.setCancelable(true);
-                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    });
-                    dialog.show();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (checker.status) {
+                        sender.send("FORWARD");
+                        Toast.makeText(ManualControl.this, "Roomba moving forward", Toast.LENGTH_SHORT).show();
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (checker.status) {
+                        sender.send("STOP");
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
                 }
+                return true;
             }
         });
         //back
-        back.setOnClickListener(new View.OnClickListener() {
+        backward.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                if (checker.status) {
-                    sender.send("BACK");
-                    Toast.makeText(Manual.this, "Roomba moving back", Toast.LENGTH_SHORT).show();
-                } else {
-                    // AlertDialog
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
-                    dialog.setTitle("Connection failed!");
-                    dialog.setMessage("Please check parameters or server status.");
-                    dialog.setCancelable(true);
-                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    });
-                    dialog.show();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (checker.status) {
+                        sender.send("BACKWARD");
+                        Toast.makeText(ManualControl.this, "Roomba moving backward", Toast.LENGTH_SHORT).show();
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (checker.status) {
+                        sender.send("STOP");
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
                 }
+                return true;
             }
         });
         //left
-        left.setOnClickListener(new View.OnClickListener() {
+        left.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                if (checker.status) {
-                    sender.send("LEFT");
-                    Toast.makeText(Manual.this, "Roomba turing left", Toast.LENGTH_SHORT).show();
-                } else {
-                    // AlertDialog
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
-                    dialog.setTitle("Connection failed!");
-                    dialog.setMessage("Please check parameters or server status.");
-                    dialog.setCancelable(true);
-                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    });
-                    dialog.show();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (checker.status) {
+                        sender.send("LEFT");
+                        Toast.makeText(ManualControl.this, "Roomba turning left", Toast.LENGTH_SHORT).show();
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (checker.status) {
+                        sender.send("STOP");
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
                 }
+                return true;
             }
         });
         //right
-        right.setOnClickListener(new View.OnClickListener() {
+        right.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                if (checker.status) {
-                    sender.send("RIGHT");
-                    Toast.makeText(Manual.this, "Roomba turning right", Toast.LENGTH_SHORT).show();
-                } else {
-                    // AlertDialog
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
-                    dialog.setTitle("Connection failed!");
-                    dialog.setMessage("Please check parameters or server status.");
-                    dialog.setCancelable(true);
-                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    });
-                    dialog.show();
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (checker.status) {
+                        sender.send("RIGHT");
+                        Toast.makeText(ManualControl.this, "Roomba turning right", Toast.LENGTH_SHORT).show();
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (checker.status) {
+                        sender.send("STOP");
+                    } else
+                        dialog("Connection failed!", "Please check parameters or server status.");
                 }
+                return true;
             }
         });
 
@@ -250,7 +239,22 @@ public class Manual extends AppCompatActivity {
         stop = true;
     }
 
-    Handler handler = new Handler() {
+    private void dialog(String title, String message) {
+        // AlertDialog
+        AlertDialog.Builder dialog = new AlertDialog.Builder(ManualControl.this);
+        dialog.setTitle(title);
+        dialog.setMessage(message);
+        dialog.setCancelable(true);
+        dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // do nothing
+            }
+        });
+        dialog.show();
+    }
+
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if ((boolean) msg.obj) {

@@ -22,8 +22,8 @@
         <activity android:name=".Setting"
             android:label="Setting">
         </activity>
-        <activity android:name=".Manual"
-            android:label="Manual">
+        <activity android:name=".ManualControl"
+            android:label="Manual Control">
         </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
