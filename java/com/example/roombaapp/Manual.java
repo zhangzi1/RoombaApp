@@ -152,8 +152,8 @@ public class Manual extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checker.status) {
-                    sender.send("forward");
-                    Toast.makeText(Manual.this, "Roomba forwarding", Toast.LENGTH_SHORT).show();
+                    sender.send("FORWARD");
+                    Toast.makeText(Manual.this, "Roomba moving forward", Toast.LENGTH_SHORT).show();
                 } else {
                     // AlertDialog
                     AlertDialog.Builder dialog = new AlertDialog.Builder(Manual.this);
@@ -175,7 +175,7 @@ public class Manual extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checker.status) {
-                    sender.send("back");
+                    sender.send("BACK");
                     Toast.makeText(Manual.this, "Roomba moving back", Toast.LENGTH_SHORT).show();
                 } else {
                     // AlertDialog
@@ -198,7 +198,7 @@ public class Manual extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checker.status) {
-                    sender.send("left");
+                    sender.send("LEFT");
                     Toast.makeText(Manual.this, "Roomba turing left", Toast.LENGTH_SHORT).show();
                 } else {
                     // AlertDialog
@@ -221,7 +221,7 @@ public class Manual extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (checker.status) {
-                    sender.send("right");
+                    sender.send("RIGHT");
                     Toast.makeText(Manual.this, "Roomba turning right", Toast.LENGTH_SHORT).show();
                 } else {
                     // AlertDialog
