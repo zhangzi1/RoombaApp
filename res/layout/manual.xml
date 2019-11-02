@@ -28,7 +28,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Roomba Drive: "
+                android:text="Roomba Status: "
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:layout_gravity="center_horizontal"/>
@@ -36,7 +36,7 @@
                 android:id="@+id/status_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Manual"
+                android:text="Disconnected"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 android:layout_gravity="center_horizontal"/>
