@@ -35,6 +35,7 @@ public class ManualControl extends AppCompatActivity {
     private boolean stop = false;
     private String ip;
     private String port;
+    private boolean dialog_enable = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +150,7 @@ public class ManualControl extends AppCompatActivity {
 
         // Buttons
         Button forward = findViewById(R.id.forward);
-        Button backward = findViewById(R.id.back);
+        Button backward = findViewById(R.id.backward);
         Button left = findViewById(R.id.left);
         Button right = findViewById(R.id.right);
         //forward
@@ -228,7 +229,6 @@ public class ManualControl extends AppCompatActivity {
                 return true;
             }
         });
-
     }
 
     @Override
@@ -240,18 +240,21 @@ public class ManualControl extends AppCompatActivity {
     }
 
     private void dialog(String title, String message) {
-        // AlertDialog
-        AlertDialog.Builder dialog = new AlertDialog.Builder(ManualControl.this);
-        dialog.setTitle(title);
-        dialog.setMessage(message);
-        dialog.setCancelable(true);
-        dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // do nothing
-            }
-        });
-        dialog.show();
+        if (dialog_enable) {
+            dialog_enable = false;
+            // AlertDialog
+            AlertDialog.Builder dialog = new AlertDialog.Builder(ManualControl.this);
+            dialog.setTitle(title);
+            dialog.setMessage(message);
+            dialog.setCancelable(true);
+            dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog_enable = true;
+                }
+            });
+            dialog.show();
+        }
     }
 
     private Handler handler = new Handler() {
