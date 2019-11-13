@@ -30,7 +30,7 @@ public class Login extends AppCompatActivity {
                 // Print info
                 String inputUsername = username.getText().toString();
                 String inputPassword = password.getText().toString();
-                Log.d("Login","Username: "+inputUsername+"  Password: "+inputPassword);
+                Log.d("Login", "Username: " + inputUsername + "  Password: " + inputPassword);
                 // launch main activity
                 Intent intent = new Intent(Login.this, BeepControl.class);
                 startActivity(intent);

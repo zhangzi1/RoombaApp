@@ -31,6 +31,7 @@ import android.widget.VideoView;
 public class ManualControl extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
+    private UDP receiver = new UDP();
     private TextView status_text;
     private boolean stop = false;
     private String ip;
@@ -148,6 +149,9 @@ public class ManualControl extends AppCompatActivity {
         };
         check.start();
 
+        // video stream
+        receiver.receive(Integer.parseInt(port));
+
         // Buttons
         Button forward = findViewById(R.id.forward);
         Button backward = findViewById(R.id.backward);
@@ -237,6 +241,7 @@ public class ManualControl extends AppCompatActivity {
         sender.close();
         checker.close();
         stop = true;
+        receiver.close();
     }
 
     private void dialog(String title, String message) {

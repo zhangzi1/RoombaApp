@@ -2,23 +2,24 @@ package com.example.roombaapp;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ConnectException;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-
 /* TCP Encapsulation
- * Object must be bound with fixed ip and port.
- * Each member function starts a thread.
- * */
+ * Object must be bound with fixed ip and port for full duplex communication.
+ * Each method starts a thread. */
 class TCP {
     private String ip;
     private int port;
     private Socket socket;
-    private OutputStream outputStream;
     public boolean status = false;
 
     TCP(String ip, int port) {
@@ -32,9 +33,8 @@ class TCP {
             public void run() {
                 try {
                     socket = new Socket(ip, port);
-                    outputStream = socket.getOutputStream();
-                    Log.d("TCP", "successful connection");
                     status = true;
+                    receive();
                 } catch (UnknownHostException e) {
                     //e.printStackTrace();
                     Log.d("TCP", "error: unknown host");
@@ -45,7 +45,7 @@ class TCP {
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (NullPointerException e) {
-                    Log.d("TCP", "error: null pointer 1");
+                    Log.d("TCP", "error: null pointer");
                     status = false;
                 }
             }
@@ -53,14 +53,13 @@ class TCP {
         setSocketThread.start();
     }
 
-    public void send(String content1) {
-        final String content = content1;
+    public void send(final String content) {
         Thread sendThread = new Thread() {
             @Override
             public void run() {
                 try {
+                    OutputStream outputStream = socket.getOutputStream();
                     outputStream.write(content.getBytes());
-                    Log.d("TCP", "successful sending");
                     status = true;
                 } catch (SocketException e) {
                     Log.d("TCP", "error: socket broken");
@@ -76,19 +75,39 @@ class TCP {
         sendThread.start();
     }
 
+    public void receive() {
+        Thread receiveThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    while (true) {
+                        InputStream inputStream = socket.getInputStream();
+                        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                        String msg = bufferedReader.readLine();
+                        Log.d("TCP", msg);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (NullPointerException e) {
+                    Log.d("TCP", "null pointer");
+                }
+            }
+        };
+        receiveThread.start();
+    }
+
     public void close() {
         Thread closeThread = new Thread() {
             @Override
             public void run() {
                 try {
                     socket.close();
-                    outputStream.close();
-                    Log.d("TCP", "connection closed");
                     status = false;
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (NullPointerException e) {
-                    Log.d("TCP", "error: null stream");
+                    Log.d("TCP", "error: null pointer");
                     status = false;
                 }
             }
