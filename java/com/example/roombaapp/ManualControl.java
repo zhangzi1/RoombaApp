@@ -12,6 +12,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 
 import android.os.Handler;
@@ -26,6 +28,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+//import android.net.Uri;
+import android.widget.MediaController;
+
+//import butterknife.BindView;
+//import butterknife.ButterKnife;
 
 
 public class ManualControl extends AppCompatActivity {
@@ -38,10 +45,30 @@ public class ManualControl extends AppCompatActivity {
     private String port;
     private boolean dialog_enable = true;
 
+    //@BindView(R.id.video_view)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.control_manual);
+        //ButterKnife.bind(this);
+        //initNetVideo();
+        //设置有进度条可以拖动快进
+        VideoView mVideoNet=findViewById((R.id.video_view));
+        MediaController localMediaController = new MediaController(this);
+        mVideoNet.setMediaController(localMediaController);
+        //String url = "http://100.64.10.123:8000/Video_sample.mp4";
+        String uri = "http://100.64.10.123:8000/Video_sample.mp4";
+        mVideoNet.setVideoURI(Uri.parse(uri));
+        mVideoNet.requestFocus();
+        mVideoNet.start();
+        mVideoNet.setMediaController(localMediaController);
+        localMediaController.setMediaPlayer(mVideoNet);
+
+        //String _filePath =  "http://100.64.10.123:8000/Video_sample.mp4";
+        //mVideoNet.setVideoURI(Uri.parse(_filePath));
+
+
+
 
         //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -89,7 +116,10 @@ public class ManualControl extends AppCompatActivity {
         /* ************************************************************************************** */
 
         // VdeoView
-        VideoView videoView = (VideoView) findViewById(R.id.video_view);
+
+        //播放网络视频
+
+        //VideoView videoView = (VideoView) findViewById(R.id.video_view);
 
         // TextView
         status_text = findViewById(R.id.status_text);
@@ -234,7 +264,15 @@ public class ManualControl extends AppCompatActivity {
             }
         });
     }
-
+    /*
+    private void initNetVideo() {
+        //设置有进度条可以拖动快进
+        MediaController localMediaController = new MediaController(this);
+        mVideoNet.setMediaController(localMediaController);
+        String url = "http://100.64.10.123:8000/Video_sample.mp4";
+        mVideoNet.setVideoPath(url);
+        mVideoNet.start();
+    }*/
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -242,6 +280,7 @@ public class ManualControl extends AppCompatActivity {
         checker.close();
         stop = true;
         receiver.close();
+
     }
 
     private void dialog(String title, String message) {
@@ -272,5 +311,4 @@ public class ManualControl extends AppCompatActivity {
             }
         }
     };
-
 }
