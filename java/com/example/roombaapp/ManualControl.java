@@ -15,6 +15,10 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +27,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -50,19 +56,6 @@ public class ManualControl extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.control_manual);
-        //ButterKnife.bind(this);
-        //initNetVideo();
-        //设置有进度条可以拖动快进
-        VideoView mVideoNet=findViewById((R.id.video_view));
-        MediaController localMediaController = new MediaController(this);
-        mVideoNet.setMediaController(localMediaController);
-        //String url = "http://100.64.10.123:8000/Video_sample.mp4";
-        String uri = "http://100.64.10.123:8000/Video_sample.mp4";
-        mVideoNet.setVideoURI(Uri.parse(uri));
-        mVideoNet.requestFocus();
-        mVideoNet.start();
-        mVideoNet.setMediaController(localMediaController);
-        localMediaController.setMediaPlayer(mVideoNet);
 
         //String _filePath =  "http://100.64.10.123:8000/Video_sample.mp4";
         //mVideoNet.setVideoURI(Uri.parse(_filePath));
@@ -130,6 +123,7 @@ public class ManualControl extends AppCompatActivity {
         port = pref.getString("port", null);
         Log.d("Setting", "IP: " + ip + "  Port: " + port);
 
+
         // launch Setting?
         if (ip == null || port == null) {
             ip = "";
@@ -138,6 +132,34 @@ public class ManualControl extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+        //设置有进度条可以拖动快进
+        /*
+        VideoView mVideoNet=findViewById((R.id.video_view));
+        MediaController localMediaController = new MediaController(this);
+        mVideoNet.setMediaController(localMediaController);
+        //String url = "http://100.64.10.123:8000/Video_sample.mp4";
+        String uri = "100.64.13.238:8082/";
+        mVideoNet.setVideoURI(Uri.parse(uri));
+        mVideoNet.requestFocus();
+        mVideoNet.start();
+        mVideoNet.setMediaController(localMediaController);
+        localMediaController.setMediaPlayer(mVideoNet);
+*/
+        WebView webView;
+        webView =(WebView) findViewById(R.id.webView1);
+        webView.setWebChromeClient(new WebChromeClient());
+
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+        });
+        webView.getSettings().setPluginState(WebSettings.PluginState.ON_DEMAND);
+        webView.getSettings().setJavaScriptEnabled(true);
+        // load the customURL with the URL of the page you want to display
+        String pageURL = "http://"+ip+":8082/";
+        webView.loadUrl(pageURL);
 
         // start connection
         sender = new TCP(ip, Integer.parseInt(port));
@@ -264,15 +286,7 @@ public class ManualControl extends AppCompatActivity {
             }
         });
     }
-    /*
-    private void initNetVideo() {
-        //设置有进度条可以拖动快进
-        MediaController localMediaController = new MediaController(this);
-        mVideoNet.setMediaController(localMediaController);
-        String url = "http://100.64.10.123:8000/Video_sample.mp4";
-        mVideoNet.setVideoPath(url);
-        mVideoNet.start();
-    }*/
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

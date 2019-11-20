@@ -20,8 +20,8 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <VideoView
-            android:id="@+id/video_view"
+        <WebView
+            android:id="@+id/webView1"
             android:layout_width="match_parent"
             android:layout_height="250dp" />
 
