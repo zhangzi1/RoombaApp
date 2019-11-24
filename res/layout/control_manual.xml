@@ -50,6 +50,31 @@
                 android:textSize="20sp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Roomba Battery: "
+                android:textColor="#000000"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/battery_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="----"
+                android:textColor="#000000"
+                android:textSize="20sp" />
+        </LinearLayout>
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -57,44 +82,43 @@
 
             <Button
                 android:id="@+id/left"
-                android:layout_width="130dp"
-                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center_horizontal"
-
                 android:text="left"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <Button
                 android:id="@+id/right"
-                android:layout_width="130dp"
-                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center_horizontal"
                 android:text="right"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
 
             <Button
                 android:id="@+id/backward"
-                android:layout_width="130dp"
-                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
-                android:text="backward"
-                android:textSize="20sp" />
+                android:text="back"
+                android:textSize="15sp" />
 
             <Button
                 android:id="@+id/forward"
-                android:layout_width="130dp"
-                android:layout_height="100dp"
+                android:layout_width="100dp"
+                android:layout_height="80dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
                 android:text="forward"
-                android:textSize="20sp" />
+                android:textSize="15sp" />
         </RelativeLayout>
     </LinearLayout>
 

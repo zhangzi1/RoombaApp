@@ -12,11 +12,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.media.MediaPlayer;
-import android.net.Uri;
 import android.os.Bundle;
 import android.webkit.WebChromeClient;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -27,41 +24,27 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 
-import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.VideoView;
-//import android.net.Uri;
-import android.widget.MediaController;
-
-//import butterknife.BindView;
-//import butterknife.ButterKnife;
 
 
 public class ManualControl extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
-    private UDP receiver = new UDP();
     private TextView status_text;
+    private TextView battery_text;
     private boolean stop = false;
     private String ip;
     private String port;
     private boolean dialog_enable = true;
 
-    //@BindView(R.id.video_view)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.control_manual);
-
-        //String _filePath =  "http://100.64.10.123:8000/Video_sample.mp4";
-        //mVideoNet.setVideoURI(Uri.parse(_filePath));
-
-
-
 
         //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -72,6 +55,22 @@ public class ManualControl extends AppCompatActivity {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
+        // WebView
+        WebView webView;
+        webView = (WebView) findViewById(R.id.webView1);
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+        });
+        webView.getSettings().setPluginState(WebSettings.PluginState.ON_DEMAND);
+        webView.getSettings().setJavaScriptEnabled(true);
+        // load the customURL with the URL of the page you want to display
+        String pageURL = "http://" + ip + ":8082/";
+        webView.loadUrl(pageURL);
 
         //NavigationView
         NavigationView navView = findViewById(R.id.nav_view);
@@ -108,21 +107,15 @@ public class ManualControl extends AppCompatActivity {
 
         /* ************************************************************************************** */
 
-        // VdeoView
-
-        //播放网络视频
-
-        //VideoView videoView = (VideoView) findViewById(R.id.video_view);
-
         // TextView
         status_text = findViewById(R.id.status_text);
+        battery_text = findViewById(R.id.battery_text);
 
         // SharedPreferences
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Setting", 0);
         ip = pref.getString("ip", null);
         port = pref.getString("port", null);
         Log.d("Setting", "IP: " + ip + "  Port: " + port);
-
 
         // launch Setting?
         if (ip == null || port == null) {
@@ -132,34 +125,6 @@ public class ManualControl extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-        //设置有进度条可以拖动快进
-        /*
-        VideoView mVideoNet=findViewById((R.id.video_view));
-        MediaController localMediaController = new MediaController(this);
-        mVideoNet.setMediaController(localMediaController);
-        //String url = "http://100.64.10.123:8000/Video_sample.mp4";
-        String uri = "100.64.13.238:8082/";
-        mVideoNet.setVideoURI(Uri.parse(uri));
-        mVideoNet.requestFocus();
-        mVideoNet.start();
-        mVideoNet.setMediaController(localMediaController);
-        localMediaController.setMediaPlayer(mVideoNet);
-*/
-        WebView webView;
-        webView =(WebView) findViewById(R.id.webView1);
-        webView.setWebChromeClient(new WebChromeClient());
-
-        webView.setWebViewClient(new WebViewClient(){
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
-        });
-        webView.getSettings().setPluginState(WebSettings.PluginState.ON_DEMAND);
-        webView.getSettings().setJavaScriptEnabled(true);
-        // load the customURL with the URL of the page you want to display
-        String pageURL = "http://"+ip+":8082/";
-        webView.loadUrl(pageURL);
 
         // start connection
         sender = new TCP(ip, Integer.parseInt(port));
@@ -172,21 +137,31 @@ public class ManualControl extends AppCompatActivity {
             @Override
             public void run() {
                 boolean previous_state = checker.status;
+                String previous_battery = checker.buffer;
                 while (!stop) {
+                    // send beacon
                     try {
                         Thread.sleep(1000);
                         checker.send("beacon");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    // check status
                     if (previous_state != checker.status) {
                         previous_state = !previous_state;
                         Message msg = new Message();
                         msg.obj = previous_state;
-                        handler.sendMessage(msg);
+                        connection_handler.sendMessage(msg);
                     }
+                    // check battery
+                    if (!previous_battery.equals(checker.buffer)) {
+                        previous_battery = checker.buffer;
+                        Message msg = new Message();
+                        msg.obj = previous_battery;
+                        battery_handler.sendMessage(msg);
+                    }
+                    // reconnection
                     if (!previous_state && !stop) {
-                        // reconnect
                         if (sender.status)
                             sender.close();
                         if (checker.status)
@@ -200,9 +175,6 @@ public class ManualControl extends AppCompatActivity {
             }
         };
         check.start();
-
-        // video stream
-        receiver.receive(Integer.parseInt(port));
 
         // Buttons
         Button forward = findViewById(R.id.forward);
@@ -293,8 +265,6 @@ public class ManualControl extends AppCompatActivity {
         sender.close();
         checker.close();
         stop = true;
-        receiver.close();
-
     }
 
     private void dialog(String title, String message) {
@@ -315,7 +285,7 @@ public class ManualControl extends AppCompatActivity {
         }
     }
 
-    private Handler handler = new Handler() {
+    private Handler connection_handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if ((boolean) msg.obj) {
@@ -323,6 +293,13 @@ public class ManualControl extends AppCompatActivity {
             } else {
                 status_text.setText("Disconnected");
             }
+        }
+    };
+
+    private Handler battery_handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            battery_text.setText((String) msg.obj);
         }
     };
 }

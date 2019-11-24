@@ -21,6 +21,7 @@ class TCP {
     private int port;
     private Socket socket;
     public boolean status = false;
+    public String buffer = "----";
 
     TCP(String ip, int port) {
         this.ip = ip;
@@ -86,6 +87,7 @@ class TCP {
                         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                         String msg = bufferedReader.readLine();
                         Log.d("TCP", msg);
+                        buffer = msg;
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

@@ -30,6 +30,7 @@ public class BeepControl extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
     private TextView status_text;
+    private TextView battery_text;
     private boolean stop = false;
     private String ip;
     private String port;
@@ -86,6 +87,7 @@ public class BeepControl extends AppCompatActivity {
 
         // TextView
         status_text = findViewById(R.id.status_text);
+        battery_text = findViewById(R.id.battery_text);
 
         // SharedPreferences
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Setting", 0);
@@ -113,21 +115,31 @@ public class BeepControl extends AppCompatActivity {
             @Override
             public void run() {
                 boolean previous_state = checker.status;
+                String previous_battery = checker.buffer;
                 while (!stop) {
+                    // send beacon
                     try {
                         Thread.sleep(1000);
                         checker.send("beacon");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                    // check status
                     if (previous_state != checker.status) {
                         previous_state = !previous_state;
                         Message msg = new Message();
                         msg.obj = previous_state;
-                        handler.sendMessage(msg);
+                        connection_handler.sendMessage(msg);
                     }
+                    // check battery
+                    if (!previous_battery.equals(checker.buffer)) {
+                        previous_battery = checker.buffer;
+                        Message msg = new Message();
+                        msg.obj = previous_battery;
+                        battery_handler.sendMessage(msg);
+                    }
+                    // reconnection
                     if (!previous_state && !stop) {
-                        // reconnect
                         if (sender.status)
                             sender.close();
                         if (checker.status)
@@ -177,7 +189,7 @@ public class BeepControl extends AppCompatActivity {
         stop = true;
     }
 
-    private Handler handler = new Handler() {
+    private Handler connection_handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             if ((boolean) msg.obj) {
@@ -185,6 +197,13 @@ public class BeepControl extends AppCompatActivity {
             } else {
                 status_text.setText("Disconnected");
             }
+        }
+    };
+
+    private Handler battery_handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            battery_text.setText((String) msg.obj);
         }
     };
 
