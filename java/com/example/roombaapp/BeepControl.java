@@ -63,15 +63,23 @@ public class BeepControl extends AppCompatActivity {
                 switch (item.getItemId()) {
                     case R.id.nav_1:
                         intent = new Intent(BeepControl.this, BeepControl.class);
+                        ((MyApplication) getApplication()).setSender(sender);
+                        ((MyApplication) getApplication()).setChecker(checker);
                         break;
                     case R.id.nav_2:
                         intent = new Intent(BeepControl.this, Setting.class);
+                        ((MyApplication) getApplication()).setSender(null);
+                        ((MyApplication) getApplication()).setChecker(null);
                         break;
                     case R.id.nav_3:
                         intent = new Intent(BeepControl.this, Login.class);
+                        ((MyApplication) getApplication()).setSender(null);
+                        ((MyApplication) getApplication()).setChecker(null);
                         break;
                     case R.id.nav_4:
                         intent = new Intent(BeepControl.this, ManualControl.class);
+                        ((MyApplication) getApplication()).setSender(sender);
+                        ((MyApplication) getApplication()).setChecker(checker);
                         break;
                     default:
                 }
@@ -84,10 +92,6 @@ public class BeepControl extends AppCompatActivity {
         });
 
         /* ************************************************************************************** */
-
-        // TextView
-        status_text = findViewById(R.id.status_text);
-        battery_text = findViewById(R.id.battery_text);
 
         // SharedPreferences
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Setting", 0);
@@ -105,10 +109,16 @@ public class BeepControl extends AppCompatActivity {
         }
 
         // start connection
-        sender = new TCP(ip, Integer.parseInt(port));
-        sender.setSocket();
-        checker = new TCP(ip, Integer.parseInt(port));
-        checker.setSocket();
+        sender = ((MyApplication) getApplication()).getSender();
+        checker = ((MyApplication) getApplication()).getChecker();
+        if (sender == null) {
+            sender = new TCP(ip, Integer.parseInt(port));
+            sender.setSocket();
+        }
+        if (checker == null) {
+            checker = new TCP(ip, Integer.parseInt(port));
+            checker.setSocket();
+        }
 
         // connectivity-checking thread
         Thread check = new Thread() {
@@ -116,6 +126,12 @@ public class BeepControl extends AppCompatActivity {
             public void run() {
                 boolean previous_state = checker.status;
                 String previous_battery = checker.buffer;
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                checker.receive();
                 while (!stop) {
                     // send beacon
                     try {
@@ -148,11 +164,26 @@ public class BeepControl extends AppCompatActivity {
                         sender.setSocket();
                         checker = new TCP(ip, Integer.parseInt(port));
                         checker.setSocket();
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        checker.receive();
                     }
                 }
             }
         };
         check.start();
+
+        // TextView
+        status_text = findViewById(R.id.status_text);
+        if (checker.status)
+            status_text.setText("Connected");
+        else
+            status_text.setText("Disconnected");
+        battery_text = findViewById(R.id.battery_text);
+        battery_text.setText(checker.buffer);
 
         // Button "BEEP"
         Button beep = findViewById(R.id.beep);
@@ -184,8 +215,6 @@ public class BeepControl extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        sender.close();
-        checker.close();
         stop = true;
     }
 

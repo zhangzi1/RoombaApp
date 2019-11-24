@@ -15,6 +15,8 @@ import java.net.UnknownHostException;
 public class UDP {
     private DatagramPacket packet;
     private DatagramSocket socket;
+    public String buffer = null;
+    public String ip = null;
 
     public void send(final String ip, final int port, final String content) {
         Thread sendThread = new Thread() {
@@ -51,8 +53,10 @@ public class UDP {
                     packet = new DatagramPacket(data, data.length);
                     while (true) {
                         socket.receive(packet);
-                        String info = new String(data, 0, packet.getLength());
-                        Log.d("UDP", info);
+                        ip = packet.getAddress().toString();
+                        Log.d("UDP", ip);
+                        buffer = new String(data, 0, packet.getLength());
+                        Log.d("UDP", buffer);
                     }
                 } catch (SocketException e) {
                     e.printStackTrace();

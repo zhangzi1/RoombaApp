@@ -35,7 +35,7 @@ class TCP {
                 try {
                     socket = new Socket(ip, port);
                     status = true;
-                    receive();
+                    // receive();
                 } catch (UnknownHostException e) {
                     //e.printStackTrace();
                     Log.d("TCP", "error: unknown host");
