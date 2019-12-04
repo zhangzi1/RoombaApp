@@ -26,6 +26,7 @@ import android.view.View;
 
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,22 +56,6 @@ public class ManualControl extends AppCompatActivity {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
-        // WebView
-        WebView webView;
-        webView = (WebView) findViewById(R.id.webView1);
-        webView.setWebChromeClient(new WebChromeClient());
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return false;
-            }
-        });
-        webView.getSettings().setPluginState(WebSettings.PluginState.ON_DEMAND);
-        webView.getSettings().setJavaScriptEnabled(true);
-        // load the customURL with the URL of the page you want to display
-        String pageURL = "http://" + ip + ":8082/";
-        webView.loadUrl(pageURL);
 
         //NavigationView
         NavigationView navView = findViewById(R.id.nav_view);
@@ -129,6 +114,22 @@ public class ManualControl extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+
+        // WebView
+        WebView webView;
+        webView = (WebView) findViewById(R.id.webView1);
+        webView.setWebChromeClient(new WebChromeClient());
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                return false;
+            }
+        });
+        webView.getSettings().setPluginState(WebSettings.PluginState.ON_DEMAND);
+        webView.getSettings().setJavaScriptEnabled(true);
+        // load the customURL with the URL of the page you want to display
+        String pageURL = "http://" + ip + ":8082/";
+        webView.loadUrl(pageURL);
 
         // start connection
         sender = ((MyApplication) getApplication()).getSender();
@@ -212,13 +213,18 @@ public class ManualControl extends AppCompatActivity {
         Button backward = findViewById(R.id.backward);
         Button left = findViewById(R.id.left);
         Button right = findViewById(R.id.right);
+
+        // EditText
+        final EditText speed = findViewById(R.id.speed_text);
+
         //forward
         forward.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (checker.status) {
-                        sender.send("FORWARD");
+                        String speed_percent = speed.getText().toString();
+                        sender.send("FWRD" + speed_percent);
                         Toast.makeText(ManualControl.this, "Roomba moving forward", Toast.LENGTH_SHORT).show();
                     } else
                         dialog("Connection failed!", "Please check parameters or server status.");
@@ -237,7 +243,8 @@ public class ManualControl extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (checker.status) {
-                        sender.send("BACKWARD");
+                        String speed_percent = speed.getText().toString();
+                        sender.send("BWRD" + speed_percent);
                         Toast.makeText(ManualControl.this, "Roomba moving backward", Toast.LENGTH_SHORT).show();
                     } else
                         dialog("Connection failed!", "Please check parameters or server status.");
@@ -256,7 +263,8 @@ public class ManualControl extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (checker.status) {
-                        sender.send("LEFT");
+                        String speed_percent = speed.getText().toString();
+                        sender.send("LEFT" + speed_percent);
                         Toast.makeText(ManualControl.this, "Roomba turning left", Toast.LENGTH_SHORT).show();
                     } else
                         dialog("Connection failed!", "Please check parameters or server status.");
@@ -275,7 +283,8 @@ public class ManualControl extends AppCompatActivity {
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     if (checker.status) {
-                        sender.send("RIGHT");
+                        String speed_percent = speed.getText().toString();
+                        sender.send("RGHT" + speed_percent);
                         Toast.makeText(ManualControl.this, "Roomba turning right", Toast.LENGTH_SHORT).show();
                     } else
                         dialog("Connection failed!", "Please check parameters or server status.");
