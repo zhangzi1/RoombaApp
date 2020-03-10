@@ -3,6 +3,9 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_5"
+            android:title="General Panel" />
+        <item
             android:id="@+id/nav_1"
             android:title="Beep Control" />
         <item

@@ -24,7 +24,8 @@ public class UDP {
             public void run() {
                 InetAddress address;
                 try {
-                    socket = new DatagramSocket();
+                    if (socket == null) socket = new DatagramSocket();
+                    socket.setBroadcast(true);
                     address = InetAddress.getByName(ip);
                     byte[] data = content.getBytes();
                     packet = new DatagramPacket(data, data.length, address, port);
@@ -48,7 +49,7 @@ public class UDP {
             @Override
             public void run() {
                 try {
-                    socket = new DatagramSocket(port);
+                    if (socket == null) socket = new DatagramSocket(port);
                     byte[] data = new byte[1024];
                     packet = new DatagramPacket(data, data.length);
                     while (true) {

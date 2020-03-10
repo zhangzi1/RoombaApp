@@ -23,7 +23,7 @@
         <WebView
             android:id="@+id/webView1"
             android:layout_width="match_parent"
-            android:layout_height="250dp" />
+            android:layout_height="200dp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal">
 
             <TextView
@@ -78,7 +78,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="5dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -112,7 +112,7 @@
                             android:layout_width="70dp"
                             android:layout_height="wrap_content"
                             android:singleLine="true"
-                            android:text="70"
+                            android:text="50"
                             android:textAlignment="center"
                             android:textColor="#000000"
                             android:textSize="17sp" />

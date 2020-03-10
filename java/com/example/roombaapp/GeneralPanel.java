@@ -1,5 +1,20 @@
 package com.example.roombaapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -8,37 +23,19 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
-
-public class BeepControl extends AppCompatActivity {
+public class GeneralPanel extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
     private TextView status_text;
     private TextView battery_text;
+    private TextView mode_text;
     private boolean stop = false;
     private String ip;
     private String port;
 
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.control_beep);
+        setContentView(R.layout.panel_general);
 
         //Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -60,43 +57,60 @@ public class BeepControl extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 Intent intent = null;
-                switch (item.getItemId()) {
-                    case R.id.nav_1:
-                        intent = new Intent(BeepControl.this, BeepControl.class);
-                        ((MyApplication) getApplication()).setSender(sender);
-                        ((MyApplication) getApplication()).setChecker(checker);
-                        break;
-                    case R.id.nav_2:
-                        intent = new Intent(BeepControl.this, Setting.class);
-                        ((MyApplication) getApplication()).setSender(null);
-                        ((MyApplication) getApplication()).setChecker(null);
-                        break;
-                    case R.id.nav_3:
-                        intent = new Intent(BeepControl.this, Login.class);
-                        ((MyApplication) getApplication()).setSender(null);
-                        ((MyApplication) getApplication()).setChecker(null);
-                        break;
-                    case R.id.nav_4:
-                        intent = new Intent(BeepControl.this, ManualControl.class);
-                        ((MyApplication) getApplication()).setSender(sender);
-                        ((MyApplication) getApplication()).setChecker(checker);
-                        break;
-                    case R.id.nav_5:
-                        intent = new Intent(BeepControl.this, GeneralPanel.class);
-                        ((MyApplication) getApplication()).setSender(sender);
-                        ((MyApplication) getApplication()).setChecker(checker);
-                        break;
-                    default:
+                boolean mode = ((MyApplication) getApplication()).getMF();
+                if (!mode && (item.getItemId() == R.id.nav_1 || item.getItemId() == R.id.nav_4)) {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(GeneralPanel.this);
+                    dialog.setTitle("It's in Automatic Mode!");
+                    dialog.setMessage("Please switch mode first.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+
+                } else {
+                    switch (item.getItemId()) {
+                        case R.id.nav_1:
+                            intent = new Intent(GeneralPanel.this, BeepControl.class);
+                            ((MyApplication) getApplication()).setSender(sender);
+                            ((MyApplication) getApplication()).setChecker(checker);
+                            break;
+                        case R.id.nav_2:
+                            intent = new Intent(GeneralPanel.this, Setting.class);
+                            ((MyApplication) getApplication()).setSender(null);
+                            ((MyApplication) getApplication()).setChecker(null);
+                            break;
+                        case R.id.nav_3:
+                            intent = new Intent(GeneralPanel.this, Login.class);
+                            ((MyApplication) getApplication()).setSender(null);
+                            ((MyApplication) getApplication()).setChecker(null);
+                            break;
+                        case R.id.nav_4:
+                            intent = new Intent(GeneralPanel.this, ManualControl.class);
+                            ((MyApplication) getApplication()).setSender(sender);
+                            ((MyApplication) getApplication()).setChecker(checker);
+                            break;
+                        case R.id.nav_5:
+                            intent = new Intent(GeneralPanel.this, GeneralPanel.class);
+                            ((MyApplication) getApplication()).setSender(sender);
+                            ((MyApplication) getApplication()).setChecker(checker);
+                            break;
+                        default:
+                    }
+                    startActivity(intent);
+                    finish();
                 }
-                startActivity(intent);
-                finish();
                 DrawerLayout drawer = findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
             }
         });
 
-        /* ************************************************************************************** */
+        //*****************************************************************************************
 
         // SharedPreferences
         SharedPreferences pref = getApplicationContext().getSharedPreferences("Setting", 0);
@@ -108,7 +122,7 @@ public class BeepControl extends AppCompatActivity {
         if (ip == null || port == null) {
             ip = "";
             port = "8866";
-            Intent intent = new Intent(BeepControl.this, Setting.class);
+            Intent intent = new Intent(GeneralPanel.this, Setting.class);
             startActivity(intent);
             finish();
         }
@@ -189,32 +203,29 @@ public class BeepControl extends AppCompatActivity {
             status_text.setText("Disconnected");
         battery_text = findViewById(R.id.battery_text);
         battery_text.setText(checker.buffer);
+        mode_text = findViewById(R.id.mode_text);
+        if (((MyApplication) getApplication()).getMF()) mode_text.setText("Manual");
+        else mode_text.setText("Automatic");
 
-        // Button "BEEP"
-        Button beep = findViewById(R.id.beep);
+        // Button "Switch Mode"
+        Button beep = findViewById(R.id.switcher);
         beep.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (checker.status) {
-                    sender.send("BEEP");
-                    Toast.makeText(BeepControl.this, "Roomba beeping", Toast.LENGTH_SHORT).show();
-                } else {
-                    // AlertDialog
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(BeepControl.this);
-                    dialog.setTitle("Connection failed!");
-                    dialog.setMessage("Please check parameters or server status.");
-                    dialog.setCancelable(true);
-                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            // do nothing
-                        }
-                    });
-                    dialog.show();
+                // AlertDialog
+                AlertDialog.Builder dialog = new AlertDialog.Builder(GeneralPanel.this);
+                if (((MyApplication) getApplication()).getMF()) {  // was Manual
+                    ((MyApplication) getApplication()).setMF(false);
+                    mode_text.setText("Automatic");
+                    // do something
+
+                } else {  // was Automatic
+                    ((MyApplication) getApplication()).setMF(true);
+                    mode_text.setText("Manual");
+                    // do something
                 }
             }
         });
-
     }
 
     @Override

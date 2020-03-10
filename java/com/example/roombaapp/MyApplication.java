@@ -5,6 +5,7 @@ import android.app.Application;
 public class MyApplication extends Application {
     private TCP sender = null;
     private TCP checker = null;
+    private boolean MF = false;
 
     public void setSender(TCP sender) {
         this.sender = sender;
@@ -14,11 +15,19 @@ public class MyApplication extends Application {
         this.checker = checker;
     }
 
+    public void setMF(boolean MF) {
+        this.MF = MF;
+    }
+
     public TCP getSender() {
         return sender;
     }
 
     public TCP getChecker() {
         return checker;
+    }
+
+    public boolean getMF() {
+        return this.MF;
     }
 }

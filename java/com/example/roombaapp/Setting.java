@@ -1,6 +1,8 @@
 package com.example.roombaapp;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -47,23 +49,42 @@ public class Setting extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 Intent intent = null;
-                switch (item.getItemId()) {
-                    case R.id.nav_1:
-                        intent = new Intent(Setting.this, BeepControl.class);
-                        break;
-                    case R.id.nav_2:
-                        intent = new Intent(Setting.this, Setting.class);
-                        break;
-                    case R.id.nav_3:
-                        intent = new Intent(Setting.this, Login.class);
-                        break;
-                    case R.id.nav_4:
-                        intent = new Intent(Setting.this, ManualControl.class);
-                        break;
-                    default:
+                boolean mode = ((MyApplication) getApplication()).getMF();
+                if (!mode && (item.getItemId() == R.id.nav_1 || item.getItemId() == R.id.nav_4)) {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(Setting.this);
+                    dialog.setTitle("It's in Automatic Mode!");
+                    dialog.setMessage("Please switch mode first.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+                } else {
+                    switch (item.getItemId()) {
+                        case R.id.nav_1:
+                            intent = new Intent(Setting.this, BeepControl.class);
+                            break;
+                        case R.id.nav_2:
+                            intent = new Intent(Setting.this, Setting.class);
+                            break;
+                        case R.id.nav_3:
+                            intent = new Intent(Setting.this, Login.class);
+                            break;
+                        case R.id.nav_4:
+                            intent = new Intent(Setting.this, ManualControl.class);
+                            break;
+                        case R.id.nav_5:
+                            intent = new Intent(Setting.this, GeneralPanel.class);
+                            break;
+                        default:
+                    }
+                    startActivity(intent);
+                    finish();
                 }
-                startActivity(intent);
-                finish();
                 DrawerLayout drawer = findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
