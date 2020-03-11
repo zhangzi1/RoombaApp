@@ -32,6 +32,7 @@ public class GeneralPanel extends AppCompatActivity {
     private boolean stop = false;
     private String ip;
     private String port;
+    private String mode;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,7 +139,8 @@ public class GeneralPanel extends AppCompatActivity {
             checker = new TCP(ip, Integer.parseInt(port));
             checker.setSocket();
         }
-
+        if (((MyApplication) getApplication()).getMF()) mode = "manu";
+        else mode = "auto";
         // connectivity-checking thread
         Thread check = new Thread() {
             @Override
@@ -155,7 +157,7 @@ public class GeneralPanel extends AppCompatActivity {
                     // send beacon
                     try {
                         Thread.sleep(1000);
-                        checker.send("beacon");
+                        checker.send(mode);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -217,11 +219,13 @@ public class GeneralPanel extends AppCompatActivity {
                 if (((MyApplication) getApplication()).getMF()) {  // was Manual
                     ((MyApplication) getApplication()).setMF(false);
                     mode_text.setText("Automatic");
+                    mode = "auto";
                     // do something
 
                 } else {  // was Automatic
                     ((MyApplication) getApplication()).setMF(true);
                     mode_text.setText("Manual");
+                    mode = "manu";
                     // do something
                 }
             }

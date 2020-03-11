@@ -88,6 +88,11 @@ public class ManualControl extends AppCompatActivity {
                         ((MyApplication) getApplication()).setSender(sender);
                         ((MyApplication) getApplication()).setChecker(checker);
                         break;
+                    case R.id.nav_5:
+                        intent = new Intent(ManualControl.this, GeneralPanel.class);
+                        ((MyApplication) getApplication()).setSender(sender);
+                        ((MyApplication) getApplication()).setChecker(checker);
+                        break;
                     default:
                 }
                 startActivity(intent);
@@ -159,7 +164,7 @@ public class ManualControl extends AppCompatActivity {
                     // send beacon
                     try {
                         Thread.sleep(1000);
-                        checker.send("beacon");
+                        checker.send("manu");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

@@ -141,7 +141,7 @@ public class BeepControl extends AppCompatActivity {
                     // send beacon
                     try {
                         Thread.sleep(1000);
-                        checker.send("beacon");
+                        checker.send("manu");
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
