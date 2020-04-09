@@ -23,7 +23,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="250dp"
-            android:text="Connecting  Roomba..."
+            android:text="Searching for Roomba in WLAN..."
+            android:textSize="20sp"
             android:textColor="#000000" />
 
         <Button

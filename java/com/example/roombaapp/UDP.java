@@ -32,10 +32,10 @@ public class UDP {
                     socket.send(packet);
                 } catch (UnknownHostException e) {
                     // e.printStackTrace();
-                    Log.d("UDP", "error: unknown host");
+                    Log.d("UDPsend", "error: unknown host");
                 } catch (SocketException e) {
                     // e.printStackTrace();
-                    Log.d("UDP", "error: socket");
+                    Log.d("UDPsend", "error: socket");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -53,15 +53,15 @@ public class UDP {
                     byte[] data = new byte[1024];
                     packet = new DatagramPacket(data, data.length);
                     while (true) {
-                        socket.receive(packet);
-                        ip = packet.getAddress().toString();
-                        Log.d("UDP", ip);
+                        socket.receive(packet);  // 阻塞
+                        ip = packet.getAddress().toString().substring(1);
+                        Log.d("UDPreceive", ip);
                         buffer = new String(data, 0, packet.getLength());
-                        Log.d("UDP", buffer);
+                        Log.d("UDPreceive", buffer);
                     }
                 } catch (SocketException e) {
                     e.printStackTrace();
-                    Log.d("UDP", "error: socket");
+                    Log.d("UDPreceive", "error: socket");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

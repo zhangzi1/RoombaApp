@@ -32,7 +32,7 @@ public class Login extends AppCompatActivity {
                 String inputPassword = password.getText().toString();
                 Log.d("Login", "Username: " + inputUsername + "  Password: " + inputPassword);
                 // launch main activity
-                Intent intent = new Intent(Login.this, GeneralPanel.class);
+                Intent intent = new Intent(Login.this, Searching.class);
                 startActivity(intent);
                 finish();
             }
