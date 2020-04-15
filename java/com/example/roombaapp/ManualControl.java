@@ -12,6 +12,8 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -31,10 +33,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import okhttp3.Call;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
 
 public class ManualControl extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
+    private ImageView map;
     private TextView status_text;
     private TextView battery_text;
     private boolean stop = false;
@@ -204,6 +215,43 @@ public class ManualControl extends AppCompatActivity {
         };
         check.start();
 
+        Thread http = new Thread() {
+            @Override
+            public void run() {
+
+                //创建OkHttpClient对象
+                OkHttpClient client = new OkHttpClient();
+                //创建Request
+                Request request = new Request.Builder()
+                        .url("http://" + ip + ":5000/download")//访问连接
+                        .get()
+                        .build();
+                //创建Call对象
+                while (!stop) {
+                    try {
+                        Thread.sleep(1000);
+                        //创建Call对象
+                        Call call = client.newCall(request);
+                        //通过execute()方法获得请求响应的Response对象
+                        Response response = call.execute();
+                        if (response.isSuccessful()) {
+                            InputStream inputStream = response.body().byteStream();//得到图片的流
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            Message msg = new Message();
+                            msg.obj = bitmap;
+                            map_handler.sendMessage(msg);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        http.start();
+
+        // ImageView
+        map = findViewById(R.id.map);
+
         // TextView
         status_text = findViewById(R.id.status_text);
         if (checker.status)
@@ -330,6 +378,12 @@ public class ManualControl extends AppCompatActivity {
         }
     }
 
+    private Handler map_handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            map.setImageBitmap((Bitmap) msg.obj);
+        }
+    };
     private Handler connection_handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
