@@ -5,7 +5,7 @@ import android.app.Application;
 public class MyApplication extends Application {
     private TCP sender = null;
     private TCP checker = null;
-    private boolean MF = false;
+    private boolean MF = true;
 
     public void setSender(TCP sender) {
         this.sender = sender;

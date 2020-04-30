@@ -32,6 +32,9 @@
         <activity
             android:name=".GeneralPanel"
             android:label="General Panel"></activity>
+        <activity
+            android:name=".RandomWalk"
+            android:label="Random Walk"></activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

@@ -12,11 +12,15 @@
             android:id="@+id/nav_4"
             android:title="Manual Control" />
         <item
+            android:id="@+id/nav_6"
+            android:title="Random Walk" />
+        <item
             android:id="@+id/nav_2"
             android:title="Setting" />
         <item
             android:id="@+id/nav_3"
             android:title="Log out" />
+
 
     </group>
 

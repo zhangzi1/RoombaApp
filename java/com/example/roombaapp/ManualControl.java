@@ -78,36 +78,72 @@ public class ManualControl extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 Intent intent = null;
-                switch (item.getItemId()) {
-                    case R.id.nav_1:
-                        intent = new Intent(ManualControl.this, BeepControl.class);
-                        ((MyApplication) getApplication()).setSender(sender);
-                        ((MyApplication) getApplication()).setChecker(checker);
-                        break;
-                    case R.id.nav_2:
-                        intent = new Intent(ManualControl.this, Setting.class);
-                        ((MyApplication) getApplication()).setSender(null);
-                        ((MyApplication) getApplication()).setChecker(null);
-                        break;
-                    case R.id.nav_3:
-                        intent = new Intent(ManualControl.this, Login.class);
-                        ((MyApplication) getApplication()).setSender(null);
-                        ((MyApplication) getApplication()).setChecker(null);
-                        break;
-                    case R.id.nav_4:
-                        intent = new Intent(ManualControl.this, ManualControl.class);
-                        ((MyApplication) getApplication()).setSender(sender);
-                        ((MyApplication) getApplication()).setChecker(checker);
-                        break;
-                    case R.id.nav_5:
-                        intent = new Intent(ManualControl.this, GeneralPanel.class);
-                        ((MyApplication) getApplication()).setSender(sender);
-                        ((MyApplication) getApplication()).setChecker(checker);
-                        break;
-                    default:
+                boolean mode = ((MyApplication) getApplication()).getMF();
+                if (!mode && (item.getItemId() == R.id.nav_1 || item.getItemId() == R.id.nav_4)) {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(ManualControl.this);
+                    dialog.setTitle("It's in Automatic Mode!");
+                    dialog.setMessage("Please switch mode first.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+
+                } else if (mode && item.getItemId() == R.id.nav_6) {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(ManualControl.this);
+                    dialog.setTitle("It's in Manual Mode!");
+                    dialog.setMessage("Please switch mode first.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+
+                } else {
+                    switch (item.getItemId()) {
+                        case R.id.nav_1:
+                            intent = new Intent(ManualControl.this, BeepControl.class);
+                            ((MyApplication) getApplication()).setSender(sender);
+                            ((MyApplication) getApplication()).setChecker(checker);
+                            break;
+                        case R.id.nav_2:
+                            intent = new Intent(ManualControl.this, Setting.class);
+                            ((MyApplication) getApplication()).setSender(null);
+                            ((MyApplication) getApplication()).setChecker(null);
+                            break;
+                        case R.id.nav_3:
+                            intent = new Intent(ManualControl.this, Login.class);
+                            ((MyApplication) getApplication()).setSender(null);
+                            ((MyApplication) getApplication()).setChecker(null);
+                            break;
+                        case R.id.nav_4:
+                            intent = new Intent(ManualControl.this, ManualControl.class);
+                            ((MyApplication) getApplication()).setSender(sender);
+                            ((MyApplication) getApplication()).setChecker(checker);
+                            break;
+                        case R.id.nav_5:
+                            intent = new Intent(ManualControl.this, GeneralPanel.class);
+                            ((MyApplication) getApplication()).setSender(sender);
+                            ((MyApplication) getApplication()).setChecker(checker);
+                            break;
+                        case R.id.nav_6:
+                            intent = new Intent(ManualControl.this, RandomWalk.class);
+                            ((MyApplication) getApplication()).setSender(sender);
+                            ((MyApplication) getApplication()).setChecker(checker);
+                            break;
+                        default:
+                    }
+                    startActivity(intent);
+                    finish();
                 }
-                startActivity(intent);
-                finish();
                 DrawerLayout drawer = findViewById(R.id.drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
@@ -223,7 +259,7 @@ public class ManualControl extends AppCompatActivity {
                 OkHttpClient client = new OkHttpClient();
                 //创建Request
                 Request request = new Request.Builder()
-                        .url("http://" + ip + ":5000/download")//访问连接
+                        .url("http://" + ip + ":5000/manu_map")//访问连接
                         .get()
                         .build();
                 //创建Call对象

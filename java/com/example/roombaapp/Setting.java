@@ -63,6 +63,21 @@ public class Setting extends AppCompatActivity {
                         }
                     });
                     dialog.show();
+
+                } else if (mode && item.getItemId() == R.id.nav_6) {
+                    // AlertDialog
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(Setting.this);
+                    dialog.setTitle("It's in Manual Mode!");
+                    dialog.setMessage("Please switch mode first.");
+                    dialog.setCancelable(true);
+                    dialog.setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // do nothing
+                        }
+                    });
+                    dialog.show();
+
                 } else {
                     switch (item.getItemId()) {
                         case R.id.nav_1:
@@ -79,6 +94,9 @@ public class Setting extends AppCompatActivity {
                             break;
                         case R.id.nav_5:
                             intent = new Intent(Setting.this, GeneralPanel.class);
+                            break;
+                        case R.id.nav_6:
+                            intent = new Intent(Setting.this, RandomWalk.class);
                             break;
                         default:
                     }
