@@ -46,6 +46,7 @@ public class ManualControl extends AppCompatActivity {
     private TCP sender;
     private TCP checker;
     private ImageView map;
+    private ImageView map2;
     private TextView status_text;
     private TextView battery_text;
     private boolean stop = false;
@@ -285,8 +286,43 @@ public class ManualControl extends AppCompatActivity {
         };
         http.start();
 
+        Thread http2 = new Thread() {
+            @Override
+            public void run() {
+
+                //创建OkHttpClient对象
+                OkHttpClient client = new OkHttpClient();
+                //创建Request
+                Request request = new Request.Builder()
+                        .url("http://" + ip + ":5000/manu_map2")//访问连接
+                        .get()
+                        .build();
+                //创建Call对象
+                while (!stop) {
+                    try {
+                        Thread.sleep(1000);
+                        //创建Call对象
+                        Call call = client.newCall(request);
+                        //通过execute()方法获得请求响应的Response对象
+                        Response response = call.execute();
+                        if (response.isSuccessful()) {
+                            InputStream inputStream = response.body().byteStream();//得到图片的流
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            Message msg = new Message();
+                            msg.obj = bitmap;
+                            map2_handler.sendMessage(msg);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+        http2.start();
+
         // ImageView
         map = findViewById(R.id.map);
+        map2=findViewById(R.id.map2);
 
         // TextView
         status_text = findViewById(R.id.status_text);
@@ -418,6 +454,13 @@ public class ManualControl extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             map.setImageBitmap((Bitmap) msg.obj);
+        }
+    };
+
+    private Handler map2_handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            map2.setImageBitmap((Bitmap) msg.obj);
         }
     };
     private Handler connection_handler = new Handler() {
